@@ -730,10 +730,26 @@ func (gp *GoPdf) imageByHolder(img ImageHolder, opts ImageOptions) error {
 }
 
 // Image : draw image
-func (gp *GoPdf) Image(picPath string, x float64, y float64, rect *Rect) error {
+func (gp *GoPdf) ImageFromImageFile(picPath string, x float64, y float64, rect *Rect) error {
 	gp.UnitsToPointsVar(&x, &y)
 	rect = rect.UnitsToPoints(gp.config.Unit)
 	imgh, err := ImageHolderByPath(picPath)
+	if err != nil {
+		return err
+	}
+
+	imageOptions := ImageOptions{
+		X:    x,
+		Y:    y,
+		Rect: rect,
+	}
+
+	return gp.imageByHolder(imgh, imageOptions)
+}
+func (gp *GoPdf) ImageFromImageInBytes(picBytes []byte, x float64, y float64, rect *Rect) error {
+	gp.UnitsToPointsVar(&x, &y)
+	rect = rect.UnitsToPoints(gp.config.Unit)
+	imgh, err := ImageHolderByBytes(picBytes)
 	if err != nil {
 		return err
 	}
